@@ -1,0 +1,178 @@
+/* High-End Typography */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+:root {
+  /* Minimalist Luxury Palette: Deep Noir & Champagne */
+  --bg-primary: #080808;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+
+  --text-primary: #ffffff;
+  --text-secondary: #999999;
+  --text-muted: #555555;
+
+  --color-gold: #e2c275;
+  --color-gold-hover: #f3d489;
+  --color-gold-soft: rgba(226, 194, 117, 0.08);
+  --color-gold-glow: rgba(226, 194, 117, 0.2);
+
+  --color-accent: #2d5a43;
+  --color-danger: #ff4d4d;
+
+  /* Spacing Scale */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+  --spacing-xl: 8rem;
+
+  /* Precision Corners */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+
+  /* Elevation Systems */
+  --shadow-luxe: 0 40px 100px rgba(0, 0, 0, 0.8);
+  --glass-bg: rgba(15, 15, 15, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.05);
+
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Outfit', sans-serif;
+}
+
+/* Global Foundations */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  /* REMOVED NOISE TEXTURE AS REQUESTED */
+}
+
+/* --- Entrance Animations --- */
+@keyframes revealUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-reveal {
+  opacity: 0;
+  animation: revealUp 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes auraReveal {
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-aura {
+  opacity: 0;
+  animation: auraReveal 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+/* --- Transitions --- */
+.fade-enter-active,
+.fade-leave-active,
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to,
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* Base Styles */
+h1,
+h2,
+h3,
+h4,
+.serif {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 8vw, 8rem);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.1rem 2.8rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  border-radius: var(--radius-xs);
+}
+
+.btn-gold {
+  background: var(--color-gold);
+  color: #000;
+}
+
+.btn-gold:hover {
+  background: white;
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(226, 194, 117, 0.2);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+::selection {
+  background: var(--color-gold);
+  color: white;
+}
