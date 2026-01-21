@@ -59,31 +59,43 @@ const loading = ref(false);
 const errorMsg = ref('');
 
 const handleLogin = async () => {
-  loading.ref = true;
+  loading.value = true;
   errorMsg.value = '';
 
+  // Si Supabase no está configurado (null), usamos modo Demo
   if (!supabase) {
-    // Fallback demo login if no supabase
     if (email.value === 'admin@lumiere.com' && password.value === 'admin123') {
       localStorage.setItem('lumiere_logged', 'true');
       router.push('/admin');
     } else {
-      errorMsg.value = 'Credenciales inválidas (Modo Demo: admin@lumiere.com / admin123)';
+      errorMsg.value = 'Modo Demo: Usa admin@lumiere.com / admin123';
     }
     loading.value = false;
     return;
   }
 
+  // Intento de Login con Supabase
   try {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
 
-    if (error) throw error;
-    router.push('/admin');
+    if (error) {
+      console.error("Error de Supabase:", error);
+      errorMsg.value = `Error: ${error.message}`;
+      loading.value = false;
+      return;
+    }
+
+    if (data?.session) {
+      router.push('/admin');
+    } else {
+      errorMsg.value = "No se pudo establecer una sesión activa.";
+    }
   } catch (err) {
-    errorMsg.value = err.message || 'Error de autenticación';
+    console.error("Fallo crítico de autenticación:", err);
+    errorMsg.value = "Error al conectar con Supabase. Revisa tu clave API.";
   } finally {
     loading.value = false;
   }
