@@ -1,144 +1,164 @@
 <template>
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div class="footer-section brand">
-        <h2 class="footer-logo">{{ store.presentation.name }}</h2>
-        <p class="footer-tagline">Vanguardia Gastronómica</p>
+  <footer class="luxe-footer">
+    <div class="container footer-main">
+      <div class="footer-left">
+        <h2 class="brand-title">{{ store.presentation.name }}</h2>
+        <p class="brand-phrase">Santuario Gastronómico</p>
       </div>
-      
-      <div class="footer-section credits">
-        <div class="credit-item">
-          <span class="label">SISTEMA DESARROLLADO POR</span>
-          <span class="value gold">EDISSON</span>
+
+      <div class="footer-center">
+        <div class="connection-card">
+          <span class="card-eyebrow">¿Deseas una plataforma similar?</span>
+          <a href="https://devedisof-mi-cv.netlify.app/" target="_blank" class="portfolio-link">
+            <span class="dev-name">DEVEDISOF DESIGN</span>
+            <div class="link-icon">
+              <ExternalLink :size="16" />
+            </div>
+          </a>
         </div>
-        <div class="credit-item">
-          <span class="label">EDICIÓN</span>
-          <span class="value">PREMIUM LUXE • 2024</span>
+      </div>
+
+      <div class="footer-right">
+        <div class="legal-stack">
+          <span>MMXXIV • ALL RIGHTS RESERVED</span>
+          <span class="gold-dot"></span>
+          <span>VANGUARDIA DIGITAL</span>
         </div>
       </div>
     </div>
     
-    <div class="footer-bottom">
-      <div class="container footer-bottom-inner">
-        <p>&copy; 2024 LUMIÈRE RESTAURANT. TODOS LOS DERECHOS RESERVADOS.</p>
-        
-        <router-link to="/admin" class="admin-link">
-          <span>Panel de Control</span>
-        </router-link>
-      </div>
-    </div>
+    <div class="ambient-glow"></div>
   </footer>
 </template>
 
 <script setup>
 import { store } from '../store';
+import { ExternalLink } from 'lucide-vue-next';
 </script>
 
 <style scoped>
-.site-footer {
-  background-color: #050505;
-  color: white;
-  padding-top: 6rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+.luxe-footer {
+  background: #050505;
+  padding: 6rem 0;
+  border-top: 1px solid rgba(226, 194, 117, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.footer-grid {
+.footer-main {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 4rem;
-  padding-bottom: 6rem;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  align-items: center;
+  gap: 3rem;
+  position: relative;
+  z-index: 10;
 }
 
-.footer-logo {
+.brand-title {
   font-family: var(--font-heading);
-  letter-spacing: 0.2em;
   font-size: 2rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
   margin-bottom: 0.5rem;
 }
 
-.footer-tagline {
-  font-size: 0.8rem;
-  letter-spacing: 0.4em;
+.brand-phrase {
+  font-size: 0.65rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Connection Card Styling */
+.connection-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 2rem 3rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.connection-card:hover {
+  background: rgba(226, 194, 117, 0.03);
+  border-color: rgba(226, 194, 117, 0.3);
+  transform: translateY(-5px);
+}
+
+.card-eyebrow {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-.credits {
+.portfolio-link {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: white;
+  background: var(--color-gold);
+  color: black;
+  padding: 0.8rem 2rem;
+  border-radius: var(--radius-xs);
+  transition: all 0.4s;
 }
 
-.credit-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.portfolio-link:hover {
+  background: white;
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(197, 166, 92, 0.3);
 }
 
-.label {
-  font-size: 0.65rem;
-  letter-spacing: 0.3em;
-  color: var(--text-muted);
-}
-
-.value {
-  font-size: 1rem;
-  font-weight: 500;
+.dev-name {
+  font-weight: 800;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
 }
 
-.gold {
-  color: var(--color-gold);
-}
-
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-  padding: 2.5rem 0;
-}
-
-.footer-bottom-inner {
+/* Right Section Legal Stack */
+.legal-stack {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
-
-.footer-bottom p {
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.2);
-  text-transform: uppercase;
-}
-
-.admin-link {
-  font-size: 0.65rem;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  font-size: 0.55rem;
   letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-  padding: 0.75rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-full);
+  color: rgba(255, 255, 255, 0.2);
 }
 
-.admin-link:hover {
-  color: var(--color-gold);
-  border-color: var(--color-gold-soft);
-  background: var(--color-gold-soft);
+.gold-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--color-gold);
+  border-radius: 50%;
+  margin: 0.5rem 0;
 }
 
-@media (max-width: 768px) {
-  .footer-bottom-inner {
-    flex-direction: column;
+.ambient-glow {
+  position: absolute;
+  bottom: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 100px;
+  background: radial-gradient(circle, rgba(197, 166, 92, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .footer-main {
+    grid-template-columns: 1fr;
     text-align: center;
+    gap: 4rem;
   }
-}
-
-@media (min-width: 768px) {
-  .credits {
-    align-items: flex-end;
-    text-align: right;
+  
+  .legal-stack {
+    align-items: center;
   }
 }
 </style>

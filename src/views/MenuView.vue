@@ -176,34 +176,41 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll));
 }
 
 .glass-pill {
-  background: rgba(20, 24, 20, 0.6);
+  background: rgba(10, 10, 10, 0.9); /* Casi negro para máximo contraste */
   backdrop-filter: blur(24px);
-  padding: 0.5rem;
+  padding: 0.4rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
-  gap: 0.25rem;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  gap: 0.5rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 
 .nav-pill-btn {
-  padding: 0.75rem 2rem;
+  padding: 0.7rem 1.8rem;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: #ffffff; /* Texto blanco puro */
+  background: rgba(255, 255, 255, 0.05); /* Fondo muy sutil para definir el botón */
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  cursor: pointer;
 }
 
 .nav-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
   color: white;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .nav-pill-btn.active {
   background: var(--color-gold);
-  color: #050705;
+  color: #000000; /* Texto negro sobre fondo dorado para lectura clara */
+  border-color: var(--color-gold);
+  box-shadow: 0 0 20px rgba(197, 166, 92, 0.4);
 }
 
 /* Grid Layout */
@@ -292,7 +299,68 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll));
 
 @media (max-width: 768px) {
   .editorial-header { height: 40vh; }
-  .editorial-grid { grid-template-columns: 1fr; gap: 4rem; }
-  .nav-pill-btn { padding: 0.6rem 1rem; font-size: 0.65rem; }
+  .editorial-grid { 
+    grid-template-columns: 1fr; 
+    gap: 3rem; 
+    margin-top: 3rem;
+  }
+  
+  .sticky-nav {
+    padding: 0.75rem 0;
+    /* Efecto de desvanecimiento lateral para indicar scroll */
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .nav-content {
+    justify-content: flex-start;
+    padding: 0.5rem 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Animación de "asomarse" o rebote inicial */
+    animation: peekScroll 1.5s ease-out 1s;
+    will-change: transform;
+  }
+  
+  .nav-content::-webkit-scrollbar { display: none; }
+
+  .glass-pill {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    background: rgba(5, 5, 5, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+  }
+
+  .nav-pill-btn { 
+    padding: 0.9rem 1.5rem; /* Botones más altos para mejor tacto */
+    font-size: 0.75rem; 
+    color: #ffffff;
+    background: transparent;
+    border: none;
+  }
+
+  .nav-pill-btn.active {
+    background: var(--color-gold);
+    color: #000000;
+    box-shadow: 0 4px 15px rgba(197, 166, 92, 0.3);
+  }
+}
+
+/* Animación de aviso de scroll lateral */
+@keyframes peekScroll {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-40px); } /* Se mueve a la izquierda */
+  50% { transform: translateX(0); }    /* Regresa */
+  75% { transform: translateX(-20px); } /* Rebote más suave */
+  100% { transform: translateX(0); }
+}
+
+/* Soporte para pantallas extra pequeñas */
+@media (max-width: 480px) {
+  .main-title { font-size: 3rem; }
+  .brand-eyebrow { font-size: 0.6rem; letter-spacing: 0.3em; }
+  .nav-pill-btn { padding: 0.8rem 1.2rem; }
 }
 </style>
