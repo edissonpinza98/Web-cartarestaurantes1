@@ -145,7 +145,7 @@
                 <div class="card-info">
                   <div class="info-top">
                     <span class="info-cat">{{ dish.category }}</span>
-                    <span class="info-price">${{ dish.price.toFixed(2) }}</span>
+                    <span class="info-price">${{ (dish.price || 0).toFixed(2) }}</span>
                   </div>
                   <h4 class="info-name">{{ dish.name }}</h4>
                 </div>
@@ -177,7 +177,7 @@
                   <div class="preview-overlay">
                     <span class="p-category">{{ editingDish.category }}</span>
                     <h2 class="p-name">{{ editingDish.name || 'Nombre del Plato' }}</h2>
-                    <span class="p-price">${{ editingDish.price.toFixed(2) }}</span>
+                    <span class="p-price">${{ (editingDish.price || 0).toFixed(2) }}</span>
                   </div>
                 </div>
               </div>
@@ -347,11 +347,11 @@ const savePresentation = () => {
 const openEditor = (dish = null) => {
   if (dish) {
     editingDish.id = dish.id;
-    editingDish.name = dish.name;
-    editingDish.price = dish.price;
-    editingDish.description = dish.description;
-    editingDish.category = dish.category;
-    editingDish.image = dish.image;
+    editingDish.name = dish.name || '';
+    editingDish.price = parseFloat(dish.price) || 0;
+    editingDish.description = dish.description || '';
+    editingDish.category = dish.category || 'Entradas';
+    editingDish.image = dish.image || '';
   } else {
     editingDish.id = null;
     editingDish.name = '';
@@ -367,8 +367,31 @@ const handleFileUpload = async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
+  // Validar tipo de archivo
+  if (!file.type.startsWith('image/')) {
+    alert('Por favor seleccione un archivo de imagen válido');
+    return;
+  }
+
+  // Validar tamaño (máximo 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('La imagen es demasiado grande. Máximo 5MB.');
+    return;
+  }
+
+  // Si no hay Supabase, usar base64
+  if (!supabase) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      editingDish.image = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  // Subir a Supabase Storage
   const fileExt = file.name.split('.').pop();
-  const fileName = `${Math.random()}.${fileExt}`;
+  const fileName = `dish_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
   const filePath = `dishes/${fileName}`;
 
   try {
@@ -385,18 +408,46 @@ const handleFileUpload = async (event) => {
     editingDish.image = publicUrl;
   } catch (error) {
     console.error('Error uploading image:', error.message);
-    alert('Error al subir la imagen.');
+    alert('Error al subir la imagen. Verifica que el bucket "restaurant-assets" exista y sea público.');
   }
 };
 
-const saveDish = () => {
-  const dishData = { ...editingDish };
-  if (dishData.id) {
-    actions.updateDish(dishData.id, dishData);
-  } else {
-    actions.addDish(dishData);
+const saveDish = async () => {
+  // Validación básica
+  if (!editingDish.name || !editingDish.name.trim()) {
+    alert('Por favor ingrese un nombre para el plato');
+    return;
   }
-  isModalOpen.value = false;
+  
+  if (editingDish.price < 0) {
+    alert('El precio no puede ser negativo');
+    return;
+  }
+
+  const dishData = {
+    name: editingDish.name.trim(),
+    description: editingDish.description?.trim() || '',
+    price: parseFloat(editingDish.price) || 0,
+    category: editingDish.category || 'Entradas',
+    image: editingDish.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80',
+    status: 'Activo'
+  };
+
+  try {
+    if (editingDish.id) {
+      // Actualizar plato existente
+      await actions.updateDish(editingDish.id, dishData);
+      console.log('Plato actualizado:', editingDish.id);
+    } else {
+      // Agregar nuevo plato
+      await actions.addDish(dishData);
+      console.log('Plato agregado');
+    }
+    isModalOpen.value = false;
+  } catch (error) {
+    console.error('Error al guardar el plato:', error);
+    alert('Hubo un error al guardar el plato. Por favor intente de nuevo.');
+  }
 };
 
 const handleDelete = (id) => {
