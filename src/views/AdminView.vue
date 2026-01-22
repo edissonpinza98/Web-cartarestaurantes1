@@ -74,18 +74,18 @@
                 <div class="section-row">
                   <div class="input-field luxe">
                     <label>Nombre del Restaurante</label>
-                    <input v-model="store.presentation.name" @input="savePresentation" type="text" />
+                    <input v-model="store.presentation.name" type="text" />
                   </div>
                   <div class="input-field luxe">
                     <label>Eslogan / Subtítulo</label>
-                    <input v-model="store.presentation.subtitle" @input="savePresentation" type="text" />
+                    <input v-model="store.presentation.subtitle" type="text" />
                   </div>
                 </div>
 
                 <div class="section-row">
                   <div class="input-field luxe full">
                     <label>Número de WhatsApp (con código de país, sin +)</label>
-                    <input v-model="store.presentation.whatsapp" @input="savePresentation" type="text" placeholder="Ej: 573000000000" />
+                    <input v-model="store.presentation.whatsapp" type="text" placeholder="Ej: 573000000000" />
                   </div>
                 </div>
 
@@ -104,7 +104,7 @@
                         </div>
                       </div>
                       <input ref="heroInput" type="file" @change="handleHeroUpload" accept="image/*" class="hidden" />
-                      <input v-model="store.presentation.heroImage" @input="savePresentation" type="text" placeholder="URL externa..." class="luxe-input-sm" />
+                      <input v-model="store.presentation.heroImage" type="text" placeholder="URL externa..." class="luxe-input-sm" />
                     </div>
                   </div>
                 </div>
@@ -112,8 +112,15 @@
                 <div class="section-row">
                   <div class="input-field luxe full">
                     <label>Historia / Introducción</label>
-                    <textarea v-model="store.presentation.phrase" @input="savePresentation" rows="4"></textarea>
+                    <textarea v-model="store.presentation.phrase" rows="4"></textarea>
                   </div>
+                </div>
+
+                <!-- Botón de Guardar Cambios -->
+                <div class="section-row">
+                  <button @click="savePresentation" class="save-btn-luxe">
+                    <span>💾 Guardar Cambios</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -340,8 +347,14 @@ onMounted(() => {
   }, 1000);
 });
 
-const savePresentation = () => {
-  actions.updatePresentation(store.presentation);
+const savePresentation = async () => {
+  try {
+    await actions.updatePresentation(store.presentation);
+    alert('✅ Cambios guardados exitosamente');
+  } catch (error) {
+    console.error('Error al guardar:', error);
+    alert('❌ Hubo un error al guardar los cambios');
+  }
 };
 
 const openEditor = (dish = null) => {
@@ -1047,6 +1060,36 @@ const handleDelete = (id) => {
 }
 
 .apply-btn:hover { background: white; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }
+
+.save-btn-luxe {
+  background: var(--color-gold);
+  color: black;
+  border: none;
+  padding: 1.25rem 3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.save-btn-luxe:hover { 
+  background: white; 
+  transform: translateY(-3px); 
+  box-shadow: 0 15px 40px rgba(197, 166, 92, 0.3); 
+}
+
+.save-btn-luxe:active {
+  transform: translateY(0);
+}
 
 /* Empty Zen */
 .empty-zen { text-align: center; padding: 10rem 0; color: var(--text-muted); }
