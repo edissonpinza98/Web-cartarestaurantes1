@@ -161,4 +161,28 @@ import { ExternalLink } from 'lucide-vue-next';
     align-items: center;
   }
 }
+
+@media (max-width: 480px) {
+  .brand-title {
+    font-size: 1.5rem;
+    letter-spacing: 0.2em;
+    word-break: break-word;
+  }
+  
+  .connection-card {
+    padding: 1.5rem 1rem;
+  }
+  
+  .portfolio-link {
+    padding: 0.8rem 1rem;
+    font-size: 0.7rem;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .legal-stack {
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+  }
+}
 </style>

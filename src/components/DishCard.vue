@@ -150,7 +150,8 @@ defineEmits(['add']);
 .dish-name {
   font-size: 1.4rem;
   font-weight: 400;
-  white-space: nowrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .name-line {

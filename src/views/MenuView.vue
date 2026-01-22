@@ -305,6 +305,19 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll));
     margin-top: 3rem;
   }
   
+  .brand-eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    padding: 0 1rem;
+    white-space: normal;
+  }
+
+  .main-title {
+    font-size: clamp(2rem, 10vw, 3.5rem);
+    padding: 0 1rem;
+    word-break: break-word;
+  }
+  
   .sticky-nav {
     padding: 0.75rem 0;
     /* Efecto de desvanecimiento lateral para indicar scroll */
