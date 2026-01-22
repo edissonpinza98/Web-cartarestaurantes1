@@ -64,11 +64,11 @@ const handleLogin = async () => {
 
   // Si Supabase no está configurado (null), usamos modo Demo
   if (!supabase) {
-    if (email.value === 'admin@lumiere.com' && password.value === 'admin123') {
+    if (email.value === 'Kevin4k@bbq.com' && password.value === 'Kevinbbq-26@') {
       localStorage.setItem('lumiere_logged', 'true');
       router.push('/admin');
     } else {
-      errorMsg.value = 'Modo Demo: Usa admin@lumiere.com / admin123';
+      errorMsg.value = 'Modo Demo: Usa Kevin4k@bbq.com / Kevinbbq-26@';
     }
     loading.value = false;
     return;
