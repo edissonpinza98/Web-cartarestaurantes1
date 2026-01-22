@@ -87,7 +87,17 @@ const waLink = computed(() => {
     text += `▪ ${item.quantity}x ${item.name} ($${(item.price * item.quantity).toFixed(2)})\n`;
   });
   text += `\nTotal: $${total.value.toFixed(2)}\n\n*Gracias por preferirnos.*`;
-  const number = store.presentation.whatsapp || '573000000000';
+  
+  // Limpiar el número de WhatsApp (quitar espacios, guiones, paréntesis, etc.)
+  let number = store.presentation.whatsapp || '573000000000';
+  number = number.replace(/[^0-9]/g, ''); // Solo números
+  
+  // Validar que el número tenga al menos 10 dígitos
+  if (number.length < 10) {
+    console.warn('Número de WhatsApp inválido, usando número por defecto');
+    number = '573000000000';
+  }
+  
   return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 });
 </script>

@@ -84,8 +84,8 @@
 
                 <div class="section-row">
                   <div class="input-field luxe full">
-                    <label>Número de WhatsApp (con código de país, sin +)</label>
-                    <input v-model="store.presentation.whatsapp" type="text" placeholder="Ej: 573000000000" />
+                    <label>Número de WhatsApp (solo 10 dígitos colombianos)</label>
+                    <input v-model="store.presentation.whatsapp" type="text" placeholder="Ej: 3001234567" maxlength="12" />
                   </div>
                 </div>
 
@@ -349,8 +349,25 @@ onMounted(() => {
 
 const savePresentation = async () => {
   try {
+    // Limpiar y validar número de WhatsApp
+    let whatsappNumber = store.presentation.whatsapp?.replace(/[^0-9]/g, '') || '';
+    
+    // Si el número ya tiene el código de país 57, quitarlo
+    if (whatsappNumber.startsWith('57') && whatsappNumber.length === 12) {
+      whatsappNumber = whatsappNumber.substring(2);
+    }
+    
+    // Validar que tenga exactamente 10 dígitos (número colombiano)
+    if (whatsappNumber.length !== 10) {
+      alert('⚠️ El número debe tener exactamente 10 dígitos.\nEjemplo: 3001234567');
+      return;
+    }
+    
+    // Agregar automáticamente el código de país de Colombia (57)
+    store.presentation.whatsapp = '57' + whatsappNumber;
+    
     await actions.updatePresentation(store.presentation);
-    alert('✅ Cambios guardados exitosamente');
+    alert('✅ Cambios guardados exitosamente\nNúmero guardado: +57 ' + whatsappNumber);
   } catch (error) {
     console.error('Error al guardar:', error);
     alert('❌ Hubo un error al guardar los cambios');
