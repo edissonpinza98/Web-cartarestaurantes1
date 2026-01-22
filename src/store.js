@@ -9,7 +9,11 @@ export const store = reactive({
     eyebrow: 'EST. 2024 • VANGUARDIA',
     phrase: 'Descubra un santuario gastronómico donde la vanguardia culinaria se fusiona con la sofisticación del diseño contemporáneo.',
     heroImage: '/images/hero.png',
-    whatsapp: '573000000000'
+    whatsapp: '573000000000',
+    instagram: '@lumiere_res',
+    address: 'Calle de la Gastronomía #123, Bogotá',
+    phone: '+57 123 456 7890',
+    categories: ['Entradas', 'Platos Fuertes', 'Postres', 'Bebidas']
   },
   dishes: [],
   cart: [],
@@ -41,7 +45,7 @@ export const initStore = async () => {
       .maybeSingle(); // Better than .single() if table is empty
 
     if (pres && !presErr) {
-      store.presentation = pres;
+      Object.assign(store.presentation, pres);
     } else if (presErr) {
       console.warn('Using default presentation due to Supabase error/missing configuration');
     }
@@ -77,6 +81,44 @@ export const actions = {
       .upsert({ id: 1, ...store.presentation });
 
     if (error) console.error('Supabase error:', error);
+  },
+
+  async addCategory(cat) {
+    if (!store.presentation.categories.includes(cat)) {
+      store.presentation.categories.push(cat);
+      await this.updatePresentation(store.presentation);
+    }
+  },
+
+  async updateCategory(oldCat, newCat) {
+    if (oldCat === newCat || !newCat.trim()) return;
+
+    // Update categories list
+    const index = store.presentation.categories.indexOf(oldCat);
+    if (index !== -1) {
+      store.presentation.categories[index] = newCat.trim();
+    }
+
+    // Update all dishes in this category
+    store.dishes.forEach(dish => {
+      if (dish.category === oldCat) {
+        this.updateDish(dish.id, { category: newCat.trim() });
+      }
+    });
+
+    await this.updatePresentation(store.presentation);
+  },
+
+  async deleteCategory(cat) {
+    store.presentation.categories = store.presentation.categories.filter(c => c !== cat);
+    // Reset category of dishes in this category to first available
+    const firstCat = store.presentation.categories[0] || 'Sin categoría';
+    store.dishes.forEach(dish => {
+      if (dish.category === cat) {
+        this.updateDish(dish.id, { category: firstCat });
+      }
+    });
+    await this.updatePresentation(store.presentation);
   },
 
   // --- Dish Actions ---

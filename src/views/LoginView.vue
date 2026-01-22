@@ -228,4 +228,16 @@ const handleLogin = async () => {
   40% { content: '..'; }
   60% { content: '...'; }
 }
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 3rem 1.5rem;
+    margin: 1.5rem;
+    max-width: calc(100% - 3rem);
+  }
+  
+  .brand-name {
+    font-size: 2rem;
+  }
+}
 </style>

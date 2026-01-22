@@ -26,10 +26,12 @@
             class="nav-tab" 
             :class="{ active: currentTab === tab.id }"
             @click="currentTab = tab.id"
+            :data-tooltip="tab.label"
           >
             <div class="tab-icon-box">
               <component :is="tab.icon" :size="20" stroke-width="1.5" />
             </div>
+            <span class="tab-tooltip">{{ tab.label }}</span>
           </button>
         </nav>
 
@@ -110,25 +112,46 @@
                 </div>
 
                 <div class="section-row">
+                  <div class="input-field luxe">
+                    <label>Instagram</label>
+                    <input v-model="store.presentation.instagram" type="text" placeholder="@usuario" />
+                  </div>
+                  <div class="input-field luxe">
+                    <label>Teléfono de Contacto</label>
+                    <input v-model="store.presentation.phone" type="text" placeholder="+57 ..." />
+                  </div>
+                </div>
+
+                <div class="section-row">
+                  <div class="input-field luxe full">
+                    <label>Dirección Física</label>
+                    <input v-model="store.presentation.address" type="text" placeholder="Calle ..., Ciudad" />
+                  </div>
+                </div>
+
+                <div class="section-row">
                   <div class="input-field luxe full">
                     <label>Historia / Introducción</label>
                     <textarea v-model="store.presentation.phrase" rows="4"></textarea>
                   </div>
                 </div>
 
+
                 <!-- Botón de Guardar Cambios -->
                 <div class="section-row">
                   <button @click="savePresentation" class="save-btn-luxe">
-                    <span>💾 Guardar Cambios</span>
+                    <Save :size="18" />
+                    <span>Guardar Cambios</span>
                   </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Dishes Catalog View (Redesigned as Grid) -->
-          <div v-if="currentTab === 'dishes'" class="catalog-grid-wrapper">
-            <div class="catalog-controls">
+          <!-- Dishes Catalog View (Unified List) -->
+          <div v-if="currentTab === 'dishes'" class="catalog-interface-v6">
+            <!-- Header Bar: Search & Filters -->
+            <div class="catalog-header-bar">
               <div class="search-box">
                 <Search :size="18" />
                 <input type="text" placeholder="Buscar en el catálogo..." />
@@ -160,13 +183,128 @@
             </div>
           </div>
 
-          <!-- Analytics & Dashboard -->
-          <div v-if="currentTab === 'dashboard' || currentTab === 'analytics'" class="empty-zen">
-            <div class="zen-circle">
-              <BarChart3 :size="60" stroke-width="1" class="pulse-icon" />
+          <!-- Categories Dedicated Environment -->
+          <div v-if="currentTab === 'categories'" class="categories-env animate-aura">
+            <div class="env-header">
+              <h2 class="env-title">Gestión de Secciones</h2>
+              <p class="env-subtitle">Organice la estructura de su menú, añada nuevas categorías o renombre las existentes.</p>
             </div>
-            <h3>En Construcción</h3>
-            <p>Estamos diseñando una experiencia analítica sin precedentes para su negocio.</p>
+
+            <div class="category-manager-luxe env-mode">
+              <div class="cat-controls-row">
+                <div class="cat-input-group">
+                  <input v-model="newCatName" type="text" placeholder="Nombre de la nueva sección..." @keyup.enter="addCat" />
+                  <button @click="addCat" class="add-cat-btn">
+                    <Plus :size="18" />
+                    <span>Añadir Categoría</span>
+                  </button>
+                </div>
+
+                <div class="cat-tags-wrapper">
+                  <label class="inner-label">Secciones actuales habilitadas</label>
+                  <div class="cat-tags">
+                    <div v-for="cat in store.presentation.categories" :key="cat" class="cat-tag luxe-badge">
+                      <div v-if="editingCatName === cat" class="inline-editor-box">
+                        <input 
+                          v-model="tempCatName"
+                          class="inline-edit-input"
+                          @blur="finishEditingCat(cat)"
+                          @keyup.enter="finishEditingCat(cat)"
+                          @keyup.esc="editingCatName = null"
+                          v-focus
+                        />
+                      </div>
+                      <template v-else>
+                        <span class="cat-name-trigger" @click="startEditingCat(cat)">
+                          {{ cat }}
+                          <Edit2 :size="10" class="mini-icon" />
+                        </span>
+                        <button @click="actions.deleteCategory(cat)" class="del-tag">
+                          <Trash2 :size="14" />
+                        </button>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dashboard Tab -->
+          <div v-if="currentTab === 'dashboard'" class="dashboard-grid animate-aura">
+            <div class="stats-card luxe">
+              <div class="stats-icon"><Utensils :size="24" /></div>
+              <div class="stats-data">
+                <span class="stats-value">{{ store.dishes.length }}</span>
+                <span class="stats-label">Items en Menú</span>
+              </div>
+            </div>
+            <div class="stats-card luxe">
+              <div class="stats-icon"><LayoutDashboard :size="24" /></div>
+              <div class="stats-data">
+                <span class="stats-value">{{ store.presentation.categories.length }}</span>
+                <span class="stats-label">Categorías</span>
+              </div>
+            </div>
+            <div class="stats-card luxe">
+              <div class="stats-icon gold"><Monitor :size="24" /></div>
+              <div class="stats-data">
+                <span class="stats-value">Online</span>
+                <span class="stats-label">Estado del Sitio</span>
+              </div>
+            </div>
+
+            <div class="dashboard-hero-panel luxe">
+              <div class="hero-left">
+                <h2>Bienvenido, {{ store.presentation.name }}</h2>
+                <p>Su vitrina gastronómica digital está funcionando correctamente. Desde aquí puede gestionar cada detalle de la experiencia de sus clientes.</p>
+                <div class="hero-actions">
+                  <button @click="currentTab = 'dishes'" class="btn-micro gold">Nuevo Plato</button>
+                  <button @click="currentTab = 'presentation'" class="btn-micro ghost">Ajustar Branding</button>
+                </div>
+              </div>
+              <div class="hero-right">
+                <div class="floating-brand-logo">
+                  {{ store.presentation.name.charAt(0) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Tab -->
+          <div v-if="currentTab === 'analytics'" class="analytics-wrapper animate-aura">
+            <div class="analytics-header">
+              <h3>Métricas de Rendimiento</h3>
+              <p>Visualización del impacto digital de su menú.</p>
+            </div>
+            
+            <div class="metrics-grid">
+              <div class="metric-panel">
+                <div class="p-header">Visitas al Menú (Simulado)</div>
+                <div class="p-chart-sim">
+                  <div v-for="h in [40, 70, 45, 90, 65, 80, 50]" :key="h" class="bar" :style="{ height: h + '%' }"></div>
+                </div>
+                <div class="p-footer">Últimos 7 días</div>
+              </div>
+
+              <div class="metric-panel list">
+                <div class="p-header">Platos Más Vistos</div>
+                <div class="top-dishes-list">
+                  <div v-for="(dish, i) in store.dishes.slice(0, 3)" :key="dish.id" class="top-dish-item">
+                    <span class="rank">#{{ i + 1 }}</span>
+                    <span class="name">{{ dish.name }}</span>
+                    <span class="view-count">{{ 120 - (i * 30) }} vistas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="empty-zen nested" style="padding: 4rem 0;">
+              <div class="zen-circle small">
+                <BarChart3 :size="30" stroke-width="1" class="pulse-icon" />
+              </div>
+              <p>Datos avanzados de Supabase en proceso de integración.</p>
+            </div>
           </div>
         </div>
       </main>
@@ -258,12 +396,14 @@ import {
   Edit2, 
   Trash2, 
   Plus,
+  LayoutGrid,
   BarChart3,
   Monitor,
   X,
   LogOut,
   Image,
-  Search
+  Search,
+  Save
 } from 'lucide-vue-next';
 
 const router = useRouter();
@@ -319,20 +459,49 @@ const handleLogout = async () => {
 };
 const currentTab = ref('dishes');
 const isModalOpen = ref(false);
-const categories = ['Entradas', 'Platos Fuertes', 'Postres', 'Bebidas'];
+const newCatName = ref('');
+
+const addCat = () => {
+  if (newCatName.value.trim()) {
+    actions.addCategory(newCatName.value.trim());
+    newCatName.value = '';
+  }
+};
+
+const categories = computed(() => store.presentation.categories);
+const editingCatName = ref(null);
+const tempCatName = ref('');
+
+const startEditingCat = (cat) => {
+  editingCatName.value = cat;
+  tempCatName.value = cat;
+};
+
+const finishEditingCat = async (oldCat) => {
+  if (tempCatName.value.trim() && tempCatName.value !== oldCat) {
+    await actions.updateCategory(oldCat, tempCatName.value.trim());
+  }
+  editingCatName.value = null;
+};
+
+// Custom directive for auto-focus
+const vFocus = {
+  mounted: (el) => el.focus()
+};
 
 const editingDish = reactive({
   id: null,
   name: '',
   price: 0,
   description: '',
-  category: 'Entradas',
+  category: store.presentation.categories[0] || '',
   image: ''
 });
 
 const tabs = [
   { id: 'dashboard', label: 'Resumen', icon: LayoutDashboard },
   { id: 'presentation', label: 'Identidad', icon: Monitor },
+  { id: 'categories', label: 'Categorías', icon: LayoutGrid },
   { id: 'dishes', label: 'Catálogo', icon: Utensils },
   { id: 'analytics', label: 'Métricas', icon: BarChart3 },
 ];
@@ -342,6 +511,11 @@ const activeTabLabel = computed(() => {
 });
 
 onMounted(() => {
+  // Safeguard: Ensure categories is always an array
+  if (!store.presentation.categories) {
+    store.presentation.categories = ['Entradas', 'Platos Fuertes', 'Postres', 'Bebidas'];
+  }
+  
   setTimeout(() => {
     isPageLoading.value = false;
   }, 1000);
@@ -595,6 +769,7 @@ const handleDelete = (id) => {
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
+  position: relative;
 }
 
 .nav-tab:hover {
@@ -607,6 +782,43 @@ const handleDelete = (id) => {
   border-color: var(--color-gold);
   color: var(--color-gold);
   box-shadow: 0 0 20px var(--color-gold-glow);
+}
+
+.tab-tooltip {
+  position: absolute;
+  left: 70px;
+  background: var(--color-gold);
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-10px);
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.nav-tab:hover .tab-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Tooltip Arrow */
+.tab-tooltip::after {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 8px;
+  height: 8px;
+  background: var(--color-gold);
 }
 
 .sidebar-bottom {
@@ -667,6 +879,9 @@ const handleDelete = (id) => {
   font-size: 2rem;
   font-weight: 400;
   font-family: var(--font-heading);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .header-actions {
@@ -850,6 +1065,7 @@ const handleDelete = (id) => {
 
 .search-box input {
   flex: 1;
+  min-width: 0;
   background: none;
   border: none;
   padding: 1rem 0;
@@ -886,76 +1102,139 @@ const handleDelete = (id) => {
 }
 
 .dish-card-v2 {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .dish-card-v2:hover {
-  transform: translateY(-10px);
-  border-color: var(--color-gold-glow);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  transform: translateY(-12px);
+  border-color: rgba(226, 194, 117, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
 }
 
 .card-media {
   position: relative;
-  height: 220px;
+  height: 240px;
   overflow: hidden;
 }
 
-.card-media img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
-.card-media:hover img { transform: scale(1.1); }
+.card-media img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1); 
+}
+
+.dish-card-v2:hover .card-media img { 
+  transform: scale(1.15); 
+}
 
 .status-indicator {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #555;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  z-index: 5;
 }
 
-.status-indicator.activo { background: #4ade80; box-shadow: 0 0 10px #4ade80; }
+.status-indicator.activo { 
+  color: #4ade80; 
+  border-color: rgba(74, 222, 128, 0.3);
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.1); 
+}
 
 .card-hover-actions {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
   opacity: 0;
-  transition: 0.4s;
+  transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.card-media:hover .card-hover-actions { opacity: 1; }
+.dish-card-v2:hover .card-hover-actions { opacity: 1; }
 
 .action-circle {
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.4s;
 }
 
-.action-circle:hover { background: white; color: black; }
-.action-circle.delete:hover { background: #ff4d4d; color: white; border-color: #ff4d4d; }
+.action-circle:hover { 
+  background: white; 
+  color: black; 
+  transform: scale(1.1);
+}
 
-.card-info { padding: 1.5rem; }
-.info-top { display: flex; justify-content: space-between; margin-bottom: 0.8rem; }
-.info-cat { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
-.info-price { font-size: 0.9rem; font-weight: 700; color: var(--color-gold); }
-.info-name { font-size: 1.25rem; font-weight: 400; font-family: var(--font-heading); }
+.action-circle.delete:hover { 
+  background: var(--color-danger); 
+  color: white; 
+  border-color: var(--color-danger); 
+}
+
+.card-info { 
+  padding: 2rem; 
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-top { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+}
+
+.info-cat { 
+  font-size: 0.6rem; 
+  text-transform: uppercase; 
+  letter-spacing: 0.2em; 
+  color: var(--color-gold); 
+  font-weight: 700;
+}
+
+.info-price { 
+  font-size: 1.1rem; 
+  font-weight: 600; 
+  color: white; 
+  font-family: var(--font-body);
+}
+
+.info-name { 
+  font-size: 1.5rem; 
+  font-weight: 400; 
+  font-family: var(--font-heading); 
+  line-height: 1.2;
+}
 
 /* Advanced Modal V5 */
 .modal-root {
@@ -1062,10 +1341,28 @@ const handleDelete = (id) => {
   border-radius: var(--radius-xs);
   outline: none;
   font-size: 1rem;
+  width: 100%;
+  max-width: 100%;
 }
 
-.upload-input-group { display: flex; gap: 1rem; }
-.upload-btn { background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 0 1.5rem; color: white; border-radius: 8px; cursor: pointer; }
+.upload-input-group { 
+  display: flex; 
+  gap: 1rem; 
+  width: 100%;
+}
+.upload-input-group input {
+  flex: 1;
+  min-width: 0;
+}
+.upload-btn { 
+  background: var(--bg-secondary); 
+  border: 1px solid var(--glass-border); 
+  padding: 0 1.2rem; 
+  color: white; 
+  border-radius: 8px; 
+  cursor: pointer;
+  flex-shrink: 0;
+}
 
 .apply-btn {
   background: var(--color-gold);
@@ -1130,12 +1427,628 @@ const handleDelete = (id) => {
 
 @keyframes pulse { 0% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.1); opacity: 0.6; } 100% { transform: scale(1); opacity: 0.3; } }
 
+/* --- New Administration Environments Styles --- */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.stats-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  padding: 2rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: transform 0.4s;
+}
+
+.stats-card:hover { transform: translateY(-5px); border-color: var(--color-gold); }
+
+.stats-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.stats-icon.gold { color: var(--color-gold); background: var(--color-gold-soft); }
+
+.stats-data { display: flex; flex-direction: column; }
+.stats-value { font-size: 1.5rem; font-weight: 700; font-family: var(--font-heading); }
+.stats-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+
+.dashboard-hero-panel {
+  grid-column: span 3;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, #050505 100%);
+  border: 1px solid var(--glass-border);
+  padding: 4rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.hero-left h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+.hero-left p { color: var(--text-secondary); max-width: 500px; margin-bottom: 2.5rem; line-height: 1.8; }
+
+.hero-actions { display: flex; gap: 1rem; }
+.btn-micro {
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.3s;
+  border: 1px solid transparent;
+}
+
+.btn-micro.gold { background: var(--color-gold); color: black; }
+.btn-micro.ghost { background: transparent; border-color: var(--glass-border); color: white; }
+
+.floating-brand-logo {
+  width: 120px;
+  height: 120px;
+  border: 1px solid var(--color-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 4rem;
+  color: var(--color-gold);
+  box-shadow: 0 0 40px var(--color-gold-glow);
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Analytics Styles */
+.analytics-wrapper { display: flex; flex-direction: column; gap: 3rem; }
+.analytics-header h3 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.analytics-header p { color: var(--text-muted); }
+
+.metrics-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2.5rem; }
+.metric-panel {
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  padding: 2.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.p-header { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-muted); margin-bottom: 2rem; }
+
+.p-chart-sim {
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.p-chart-sim .bar {
+  flex: 1;
+  background: var(--color-gold-soft);
+  border: 1px solid var(--color-gold-glow);
+  border-radius: 4px 4px 0 0;
+  transition: all 1s;
+}
+
+.p-chart-sim .bar:hover { background: var(--color-gold); }
+
+.top-dishes-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.top-dish-item { display: flex; align-items: center; gap: 1rem; }
+.rank { color: var(--color-gold); font-weight: 800; }
+.name { flex: 1; font-size: 0.9rem; }
+.view-count { font-size: 0.7rem; color: var(--text-muted); }
+
+/* Catalog Interface V6 Layout */
+.catalog-interface-v6 {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.catalog-header-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 3.5rem;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.02), transparent);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.catalog-header-bar .search-box {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(226, 194, 117, 0.2);
+}
+
+/* Categories Environment Dedicated */
+.categories-env {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.env-header {
+  margin-bottom: 4rem;
+  text-align: center;
+}
+
+.env-title {
+  font-size: 2.5rem;
+  font-family: var(--font-heading);
+  margin-bottom: 1rem;
+}
+
+.env-subtitle {
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 1rem;
+}
+
+.category-manager-luxe.env-mode {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  padding: 4rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+}
+
+.category-manager-luxe.env-mode .cat-input-group {
+  max-width: 100%;
+  margin-bottom: 4rem;
+}
+
+.category-manager-luxe.env-mode .add-cat-btn {
+  padding: 0 3rem;
+  height: 60px;
+}
+
+/* Sidebar Optimized Category Manager (Minimal) */
+.category-manager-luxe.sidebar-mode {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.category-manager-luxe.sidebar-mode .manager-header {
+  margin-bottom: 2.5rem;
+}
+
+.category-manager-luxe.sidebar-mode .cat-input-group {
+  margin-bottom: 2.5rem;
+}
+
+.category-manager-luxe.sidebar-mode .add-cat-btn {
+  width: 50px;
+  padding: 0;
+}
+
+/* Category Manager UI */
+.category-manager-luxe {
+  margin-bottom: 4rem;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  width: 100%;
+}
+
+.category-manager-luxe.menu-context {
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+.manager-header { margin-bottom: 2.5rem; }
+.manager-header label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; color: var(--color-gold); display: block; margin-bottom: 0.8rem; font-weight: 700; }
+.manager-header p { font-size: 0.85rem; color: var(--text-secondary); }
+
+.cat-controls-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.controls-lower-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.cat-input-group { 
+  display: flex; 
+  gap: 1rem; 
+  margin-bottom: 2.5rem; 
+  width: 100%;
+  max-width: 600px; 
+}
+
+.cat-input-group input { 
+  flex: 1; 
+  background: rgba(255, 255, 255, 0.03); 
+  border: 1px solid var(--glass-border); 
+  padding: 1.2rem 1.8rem; 
+  border-radius: 12px; 
+  color: white; 
+  outline: none; 
+  transition: 0.4s; 
+  font-size: 0.9rem;
+}
+
+.cat-input-group input:focus { 
+  border-color: var(--color-gold); 
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.add-cat-btn { 
+  display: flex; 
+  align-items: center; 
+  gap: 1rem;
+  padding: 0 2rem;
+  background: var(--color-gold); 
+  color: black; 
+  border: none; 
+  border-radius: 12px; 
+  cursor: pointer; 
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.4s; 
+}
+
+.add-cat-btn:hover { 
+  background: white; 
+  transform: translateY(-3px) scale(1.02); 
+  box-shadow: 0 10px 30px var(--color-gold-glow);
+}
+
+.cat-tags-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.inner-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.cat-tags { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 1rem; 
+  margin-top: 0.5rem;
+}
+
+.cat-tag.luxe-badge {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.cat-tag.luxe-badge:hover {
+  background: rgba(226, 194, 117, 0.05);
+  border-color: var(--color-gold);
+  transform: translateY(-2px);
+}
+
+.cat-name-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+}
+
+.mini-icon {
+  opacity: 0.3;
+  transition: 0.3s;
+}
+
+.cat-tag.luxe-badge:hover .mini-icon {
+  opacity: 1;
+  color: var(--color-gold);
+}
+
+.inline-edit-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  width: 150px;
+  outline: none;
+}
+
+.del-tag { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.del-tag:hover { color: var(--color-danger); }
+
+/* Mobile Adjustments for New Sections */
+@media (max-width: 768px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .dashboard-hero-panel { flex-direction: column; padding: 2rem; text-align: center; gap: 3rem; }
+  .hero-left p { margin: 0 auto 2rem; }
+  .hero-actions { justify-content: center; }
+  .metrics-grid { grid-template-columns: 1fr; }
+  .stats-card { padding: 1.5rem; }
+
+  .categories-env {
+    padding: 1rem;
+  }
+
+  .env-title {
+    font-size: 1.8rem;
+  }
+
+  .category-manager-luxe.env-mode {
+    padding: 2rem;
+  }
+
+  .category-manager-luxe.env-mode .add-cat-btn {
+    padding: 0 1.5rem;
+  }
+
+  .tab-tooltip {
+    display: none;
+  }
+}
+
 .hidden { display: none; }
 
 @media (max-width: 1024px) {
   .editor-layout { flex-direction: column; overflow-y: auto; }
   .editor-side-preview { padding: 2rem; }
   .editor-controls { padding: 3rem; }
+}
+
+/* Mobile Optimizations - Comprehensive */
+@media (max-width: 768px) {
+  .admin-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* Transform Sidebar to Bottom Nav */
+  .luxe-sidebar {
+    width: 100% !important;
+    height: 70px;
+    flex-direction: row;
+    padding: 0 1.5rem;
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    border-right: none;
+    border-top: 1px solid var(--glass-border);
+    justify-content: space-between;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(25px);
+  }
+
+  .sidebar-brand {
+    display: none;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    gap: 1rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .nav-tab {
+    width: 45px;
+    height: 45px;
+  }
+
+  .sidebar-bottom {
+    margin-top: 0;
+  }
+
+  .circle-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Adjust Main Stage */
+  .main-stage {
+    padding-bottom: 80px; /* Space for bottom nav */
+  }
+
+  .stage-topbar {
+    padding: 2rem 0;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .action-btn {
+    justify-content: center;
+    padding: 1rem;
+    font-size: 0.7rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  /* Catalog Optimizations */
+  .catalog-controls {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .filter-pills {
+    width: 100%;
+    overflow-x: auto;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+    display: flex;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* Fade mask for scroll indication */
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    /* Peek animation */
+    animation: peekScroll 1.5s ease-out 1s;
+    will-change: transform;
+  }
+  
+  .filter-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes peekScroll {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-40px); }
+    50% { transform: translateX(0); }
+    75% { transform: translateX(-20px); }
+    100% { transform: translateX(0); }
+  }
+
+  .visual-catalog {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Panel Optimizations */
+  .luxe-panel-v4 {
+    padding: 1.5rem;
+    border: none;
+    background: transparent;
+  }
+
+  .section-row, .form-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .input-field.luxe.full {
+    grid-column: span 1;
+  }
+
+  .save-btn-luxe {
+    max-width: 100%;
+  }
+
+  /* Modal Optimizations */
+  .modal-root {
+    padding: 0;
+  }
+
+  .focused-editor {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .editor-controls {
+    padding: 2rem 1.5rem;
+  }
+
+  .editor-side-preview {
+    padding: 1rem;
+  }
+
+  .preview-frame {
+    max-width: 250px;
+  }
+
+  .input-field input, .input-field textarea, .form-group input, .form-group textarea, .form-group select {
+    font-size: 16px !important;
+  }
+
+  .card-hover-actions {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.3);
+    align-items: flex-end;
+    padding: 1rem;
+    justify-content: flex-end;
+  }
+
+  .action-circle {
+    width: 35px;
+    height: 35px;
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .editor-header h2 {
+    font-size: 1.5rem;
+    word-break: break-word;
+  }
+
+  .focused-editor {
+    display: flex;
+    flex-direction: column;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
+  .admin-layout, .main-stage, .workspace-area {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-reveal-text {
+    font-size: 1.8rem;
+    letter-spacing: 0.3em;
+  }
+  
+  .header-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Transitions */

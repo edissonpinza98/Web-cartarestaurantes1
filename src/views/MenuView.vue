@@ -77,7 +77,7 @@ import CartSidebar from '../components/CartSidebar.vue';
 
 const isCartOpen = ref(false);
 const activeCategory = ref('Todos');
-const categories = ['Todos', 'Entradas', 'Platos Fuertes', 'Postres', 'Bebidas'];
+const categories = computed(() => ['Todos', ...store.presentation.categories]);
 const isStuck = ref(false);
 
 const filteredDishes = computed(() => {
