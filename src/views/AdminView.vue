@@ -997,25 +997,29 @@ const handleDelete = (id) => {
 
 .editor-layout {
   display: flex;
+  flex-direction: column;
   height: 100%;
+  overflow-y: auto;
 }
 
 .editor-side-preview {
-  flex: 0.4;
+  width: 100%;
   background: #080808;
-  padding: 4rem;
+  padding: 2rem 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .preview-frame {
   width: 100%;
-  aspect-ratio: 1;
+  max-width: 300px;
+  aspect-ratio: 4/3;
   position: relative;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
 }
 
 .preview-frame img { width: 100%; height: 100%; object-fit: cover; }
@@ -1025,25 +1029,25 @@ const handleDelete = (id) => {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 2.5rem;
+  padding: 1.5rem;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
 }
 
-.p-category { font-size: 0.65rem; text-transform: uppercase; color: var(--color-gold); letter-spacing: 0.2em; }
-.p-name { font-size: 1.8rem; margin: 0.5rem 0; font-family: var(--font-heading); }
-.p-price { font-size: 1.25rem; font-weight: 800; }
+.p-category { font-size: 0.6rem; text-transform: uppercase; color: var(--color-gold); letter-spacing: 0.2em; }
+.p-name { font-size: 1.2rem; margin: 0.3rem 0; font-family: var(--font-heading); }
+.p-price { font-size: 1rem; font-weight: 800; }
 
 .editor-controls {
-  flex: 0.6;
-  padding: 5rem;
+  flex: 1;
+  padding: 3rem 4rem;
   overflow-y: auto;
 }
 
-.editor-header { margin-bottom: 4rem; }
-.editor-header h2 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-.editor-header p { color: var(--text-muted); }
+.editor-header { margin-bottom: 2.5rem; }
+.editor-header h2 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+.editor-header p { color: var(--text-muted); font-size: 0.9rem; }
 
-.luxe-form-v5 { display: flex; flex-direction: column; gap: 2rem; }
+.luxe-form-v5 { display: flex; flex-direction: column; gap: 1.5rem; }
 
 .form-group { display: flex; flex-direction: column; gap: 0.8rem; }
 .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
